@@ -14,7 +14,25 @@ public enum ParentescoEnum {
         this.parentesco = parentesco;
     }
 
-    public String getParentesco() {
+    public String getValue(ParentescoEnum parentescoEnum) {
         return parentesco;
+    }
+
+    public static ParentescoEnum fromString(String value) {
+        switch (value) {
+            case "Padre":
+                return PADRE;
+            case "Madre":
+                return MADRE;
+            case "Hijo":
+                return HIJO;
+            case "Hija":
+                return HIJA;
+            case "Conyuge":
+                return CONYUGE;
+            case "Otro":
+                return OTRO;
+        }
+        throw new IllegalArgumentException("No enum constant " + ParentescoEnum.class.getCanonicalName() + "." + value);
     }
 }

@@ -12,7 +12,21 @@ public enum EstadoCivilEnum {
         this.estadoCivil = estadoCivil;
     }
 
-    public String getEstadoCivil() {
+    public static EstadoCivilEnum fromString(String value) {
+        switch (value) {
+            case "Soltero":
+                return SOLTERO;
+            case "Casado":
+                return CASADO;
+            case "Divorciado":
+                return DIVORCIADO;
+            case "Viudo":
+                return VIUDO;
+        }
+        throw new IllegalArgumentException("No enum constant " + EstadoCivilEnum.class.getCanonicalName() + "." + value);
+    }
+
+    public String getValue() {
         return estadoCivil;
     }
 }

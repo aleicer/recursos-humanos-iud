@@ -1,11 +1,11 @@
 package constant;
 
 public enum NivelEstudioEnum {
-    TECNICO("Tecnico"),
-    TECNOLOGO("Tecnologo"),
+    TECNICO("Técnico"),
+    TECNOLOGO("Tecnológico"),
     PROFESIONAL("Profesional"),
-    ESPECIALIZACION("Especializacion"),
-    MAESTRIA("Maestria"),
+    ESPECIALIZACION("Especialización"),
+    MAESTRIA("Maestría"),
     DOCTORADO("Doctorado");
 
     private final String nivelEstudio;
@@ -14,7 +14,25 @@ public enum NivelEstudioEnum {
         this.nivelEstudio = nivelEstudio;
     }
 
-    public String getNivelEstudio() {
+    public String getvalue() {
         return nivelEstudio;
+    }
+
+    public static NivelEstudioEnum fromString(String value) {
+        switch (value) {
+            case "Técnico":
+                return TECNICO;
+            case "Tecnológico":
+                return TECNOLOGO;
+            case "Profesional":
+                return PROFESIONAL;
+            case "Especialización":
+                return ESPECIALIZACION;
+            case "Maestría":
+                return MAESTRIA;
+            case "Doctorado":
+                return DOCTORADO;
+        }
+        throw new IllegalArgumentException("No enum constant " + NivelEstudioEnum.class.getCanonicalName() + "." + value);
     }
 }

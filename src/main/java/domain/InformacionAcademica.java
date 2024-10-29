@@ -3,26 +3,29 @@ package domain;
 import constant.NivelEstudioEnum;
 
 public class InformacionAcademica {
-    private int idInformacionAcademica;
+    private int idEstudio;
     private int idFuncionario;
     private String universidad;
     private NivelEstudioEnum nivelEstudio;
     private String titulo;
 
     public InformacionAcademica(int idInformacionAcademica, int idFuncionario, String universidad, NivelEstudioEnum nivelEstudio, String titulo) {
-        this.idInformacionAcademica = idInformacionAcademica;
+        this.idEstudio = idInformacionAcademica;
         this.idFuncionario = idFuncionario;
         this.universidad = universidad;
         this.nivelEstudio = nivelEstudio;
         this.titulo = titulo;
     }
 
-    public int getIdInformacionAcademica() {
-        return idInformacionAcademica;
+    public InformacionAcademica() {
     }
 
-    public void setIdInformacionAcademica(int idInformacionAcademica) {
-        this.idInformacionAcademica = idInformacionAcademica;
+    public int getIdEstudio() {
+        return idEstudio;
+    }
+
+    public void setIdEstudio(int idInformacionAcademica) {
+        this.idEstudio = idInformacionAcademica;
     }
 
     public int getIdFuncionario() {

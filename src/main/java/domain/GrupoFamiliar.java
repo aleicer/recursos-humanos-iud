@@ -18,6 +18,9 @@ public class GrupoFamiliar {
         this.fechaNacimiento = fechaNacimiento;
     }
 
+    public GrupoFamiliar() {
+    }
+
     public int getIdFamiliar() {
         return idFamiliar;
     }
