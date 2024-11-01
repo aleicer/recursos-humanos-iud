@@ -45,6 +45,16 @@ public class FuncionarioController {
         return funcionario.orElse(null);
     }
 
+    public Funcionario obtenerFuncionarioPorDocumento(String cedula) throws SQLException {
+        if (funcionarios.isEmpty()) {
+            funcionarios.addAll(funcionarioDao.obtenerFuncionarios());
+        }
+        Optional<Funcionario> funcionario = funcionarios.stream()
+                .filter(f -> f.getNumeroIdentificacion().equals(cedula))
+                .findFirst();
+        return funcionario.orElse(null);
+    }
+
     public boolean eliminarFuncionario(int id) throws SQLException {
         funcionarioDao.eliminarFuncionario(id);
         return funcionarios.removeIf(f -> f.getIdFuncionario() == id);

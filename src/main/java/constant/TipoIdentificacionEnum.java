@@ -32,4 +32,20 @@ public enum TipoIdentificacionEnum {
         }
         throw new IllegalArgumentException("No enum constant " + TipoIdentificacionEnum.class.getCanonicalName() + "." + value);
     }
+
+    public static TipoIdentificacionEnum fromStringWord(String value) {
+        switch (value) {
+            case "Cedula":
+                return CEDULA;
+            case "Tarjeta Identidad":
+                return TARJETA_IDENTIDAD;
+            case "Cedula Extranjeria":
+                return CEDULA_EXTRANJERIA;
+            case "Nit":
+                return NIT;
+            case "Pasaporte":
+                return PASAPORTE;
+        }
+        throw new IllegalArgumentException("No enum constant " + TipoIdentificacionEnum.class.getCanonicalName() + "." + value);
+    }
 }
