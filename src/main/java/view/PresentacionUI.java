@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import constant.EstadoCivilEnum;
 import constant.TipoIdentificacionEnum;
@@ -50,6 +51,8 @@ public class PresentacionUI {
             public void actionPerformed(ActionEvent e) {
                 if (e.getActionCommand().equals("Crear")) {
                     crearFuncionario();
+                } else {
+                    actualizarFuncionario();
                 }
             }
         });
@@ -59,6 +62,12 @@ public class PresentacionUI {
                 buscarFuncionario();
             }
         });
+        eliminar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                eliminarFuncionario();
+            }
+        });
     }
     public static void main(String[] args) {
         JFrame frame = new JFrame("PresentacionUI");
@@ -66,7 +75,7 @@ public class PresentacionUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
-//        frame.setResizable(false);
+        frame.setResizable(false);
         frame.setSize(1000, 700);
         frame.setVisible(true);
 
@@ -77,39 +86,44 @@ public class PresentacionUI {
     }
 
     private void cargarDatosTabla() {
-        try {
-            List<Funcionario> funcionarios = funcionarioController.listarFuncionarios();
-            if (funcionarios.isEmpty()) {
-                return;
-            }
-            DefaultTableModel model = new DefaultTableModel();
-            model.addColumn("ID");
-            model.addColumn("Nombres");
-            model.addColumn("Apellidos");
-            model.addColumn("Documento");
-            model.addColumn("Sexo");
-            model.addColumn("Dirección");
-            model.addColumn("Teléfono");
-            model.addColumn("Fecha de Nacimiento");
-            model.setRowCount(0);
-            for (Funcionario funcionario : funcionarios) {
-                model.addRow(new Object[]{
-                        funcionario.getIdFuncionario(),
-                        funcionario.getNombres(),
-                        funcionario.getApellidos(),
-                        funcionario.getNumeroIdentificacion(),
-                        funcionario.getSexo(),
-                        funcionario.getDireccion(),
-                        funcionario.getTelefono(),
-                        funcionario.getFechaNacimiento()
-                });
-            }
-            tablaUsuarios.setModel(model);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+    try {
+        List<Funcionario> funcionarios = funcionarioController.listarFuncionarios();
+        if (funcionarios.isEmpty()) {
+            return;
         }
+        DefaultTableModel model = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 8; // Hacer editable solo la columna del botón
+            }
+        };
+        model.addColumn("ID");
+        model.addColumn("Nombres");
+        model.addColumn("Apellidos");
+        model.addColumn("Documento");
+        model.addColumn("Sexo");
+        model.addColumn("Dirección");
+        model.addColumn("Teléfono");
+        model.addColumn("Fecha de Nacimiento");
+        model.setRowCount(0);
+        for (Funcionario funcionario : funcionarios) {
+            model.addRow(new Object[]{
+                    funcionario.getIdFuncionario(),
+                    funcionario.getNombres(),
+                    funcionario.getApellidos(),
+                    funcionario.getNumeroIdentificacion(),
+                    funcionario.getSexo(),
+                    funcionario.getDireccion(),
+                    funcionario.getTelefono(),
+                    funcionario.getFechaNacimiento(),
+            });
+        }
+        tablaUsuarios.setModel(model);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
 
     private void crearFuncionario () {
         String sexoFormato = this.sexo.getSelectedItem().toString().equals("Masculino") ? "M" : "F";
@@ -146,6 +160,9 @@ public class PresentacionUI {
         funcionario.setFechaNacimiento(fechaNacimientoFormato);
         try {
             funcionarioController.crearFuncionario(funcionario);
+            limpiarCampos();
+            usuarioSeleccionado.setText("Usuario Creado");
+            usuarioSeleccionado.setForeground(new java.awt.Color(33, 187, 16));
             cargarDatosTabla();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -179,12 +196,91 @@ public class PresentacionUI {
             tipoIdentificacion.setSelectedItem(funcionario.getTipoIdentificacion().getValue());
             estadoCivil.setSelectedItem(funcionario.getEstadoCivil().getValue());
             sexo.setSelectedItem(funcionario.getSexo().equals("M") ? "Masculino" : "Femenino");
-            usuarioSeleccionado.setText("Usuario seleccionado: " + funcionario.getNombres() + " " + funcionario.getApellidos());
+            usuarioSeleccionado.setText("Usuario: " + funcionario.getNombres() + " " + funcionario.getApellidos());
+            usuarioSeleccionado.setForeground(new java.awt.Color(46, 183, 135));
             idUsuario.setText(String.valueOf(funcionario.getIdFuncionario()));
             crearFuncionario.setText("Actualizar");
             crearFuncionario.setActionCommand("Actualizar");
             crearFuncionario.setBackground(new java.awt.Color(255, 255, 0));
             crearFuncionario.setForeground(new java.awt.Color(0, 0, 0));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void actualizarFuncionario () {
+        String sexoFormato = this.sexo.getSelectedItem().toString().equals("Masculino") ? "M" : "F";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate fechaNacimientoFormato;
+        try {
+            fechaNacimientoFormato = LocalDate.parse(fechaNacimiento.getText(), formatter);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "La fecha de nacimiento no es válida");
+            return;
+        }
+        if (fechaNacimientoFormato.isAfter(LocalDate.now())) {
+            JOptionPane.showMessageDialog(null, "La fecha de nacimiento no puede ser mayor a la fecha actual");
+            return;
+        }
+        String documento = numeroIdentificacion.getText();
+        String nombres = this.nombres.getText();
+        String apellidos = this.apellidos.getText();
+        String direccion = this.direccion.getText();
+        String telefono = this.telefono.getText();
+        int id = Integer.parseInt(idUsuario.getText());
+        if (documento.isEmpty() || nombres.isEmpty() || apellidos.isEmpty() || direccion.isEmpty() || telefono.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Todos los campos son obligatorios");
+            return;
+        }
+        Funcionario funcionario = new Funcionario();
+        funcionario.setIdFuncionario(id);
+        funcionario.setTipoIdentificacion(TipoIdentificacionEnum.fromStringWord(tipoIdentificacion.getSelectedItem().toString()));
+        funcionario.setNumeroIdentificacion(documento);
+        funcionario.setNombres(nombres);
+        funcionario.setApellidos(apellidos);
+        funcionario.setEstadoCivil(EstadoCivilEnum.fromString(estadoCivil.getSelectedItem().toString()));
+        funcionario.setSexo(sexoFormato);
+        funcionario.setDireccion(direccion);
+        funcionario.setTelefono(telefono);
+        funcionario.setFechaNacimiento(fechaNacimientoFormato);
+        try {
+            funcionarioController.actualizarFuncionario(id, funcionario);
+            limpiarCampos();
+            usuarioSeleccionado.setText("Usuario Actualizado");
+            usuarioSeleccionado.setForeground(new java.awt.Color(255, 255, 0));
+            cargarDatosTabla();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void limpiarCampos() {
+        numeroIdentificacion.setText("");
+        nombres.setText("");
+        apellidos.setText("");
+        direccion.setText("");
+        telefono.setText("");
+        fechaNacimiento.setText("");
+        tipoIdentificacion.setSelectedIndex(0);
+        estadoCivil.setSelectedIndex(0);
+        sexo.setSelectedIndex(0);
+        idUsuario.setText("");
+        crearFuncionario.setText("Crear");
+        crearFuncionario.setActionCommand("Crear");
+        crearFuncionario.setBackground(new java.awt.Color(33, 187, 16));
+    }
+
+    private void eliminarFuncionario () {
+        int id = Integer.parseInt(idUsuario.getText());
+        try {
+            int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea eliminar este registro?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                funcionarioController.eliminarFuncionario(id);
+                limpiarCampos();
+                usuarioSeleccionado.setText("Usuario Eliminado");
+                usuarioSeleccionado.setForeground(new java.awt.Color(225, 59, 59));
+            }
+            cargarDatosTabla();
         } catch (SQLException e) {
             e.printStackTrace();
         }
